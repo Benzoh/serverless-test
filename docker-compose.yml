@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  app:
+    build:
+      context: .
+    privileged: true
+    volumes:
+      - ./src:/var/www/html/src
+    ports:
+      - "8000:8000"
+    command: >
+      php artisan serve --host=0.0.0.0 --port=8000
