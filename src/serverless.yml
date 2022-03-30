@@ -1,24 +1,38 @@
 service: app
 provider:
-    name: aws
-    runtime: provided.al2
-    lambdaHashingVersion: 20201221
-    region: ap-northeast-1
+  name: aws
+  runtime: provided.al2
+  lambdaHashingVersion: 20201221
+  region: ap-northeast-1
+  apiGateway:
+    resourcePolicy:
+      - Effect: Allow
+        Principal: '*'
+        Action: execute-api:Invoke
+        Resource:
+          - execute-api:/*/*/*
+        Condition:
+          IpAddress:
+            aws:SourceIp:
+              - ${env:MYIP}
 plugins:
-    - ./vendor/bref/bref
+  - ./vendor/bref/bref
 functions:
-    app:
-        handler: public/index.php
-        layers:
-            - ${bref:layer.php-80-fpm}
-            - arn:aws:lambda:ap-northeast-1:387597514301:layer:lambda-oci8-layer:3
-        events:
-            - httpApi: '*'
+  app:
+    handler: public/index.php
+    layers:
+      - ${bref:layer.php-80-fpm}
+      - arn:aws:lambda:ap-northeast-1:387597514301:layer:lambda-oci8-layer:3
+    events:
+      - http:
+          path: api/hoge
+          method: GET
 package:
-    # Directories to exclude from deployment
-    exclude:
-        - node_modules/**
-        - public/storage
-        - resources/assets/**
-        - storage/**
-        - tests/**
+  # Directories to exclude from deployment
+  exclude:
+    - node_modules/**
+    - public/storage
+    - resources/assets/**
+    - storage/**
+    - tests/**
+useDotenv: true
